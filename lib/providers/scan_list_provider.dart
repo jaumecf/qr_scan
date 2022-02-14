@@ -11,8 +11,10 @@ class ScanListProvider extends ChangeNotifier {
     final nouScan = new ScanModel(valor: valor);
     final id = await DBProvider.db.inserScan(nouScan);
     // Assignam el ID de la BBDD al model
+
     nouScan.id = id;
-    if (this.tipusSeleccionat == nouScan.tipus) {
+    print('id des de provider: $id');
+    if (tipusSeleccionat == nouScan.tipus) {
       this.scans.add(nouScan);
       notifyListeners();
     }
@@ -31,7 +33,7 @@ class ScanListProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  esborrarTots(String tipus) async {
+  esborrarTots() async {
     final scans = await DBProvider.db.deteleAllScans();
     this.scans = [];
     notifyListeners();

@@ -40,7 +40,7 @@ class DBProvider {
         await db.execute('''
           CREATE TABLE Scans(
             id INTEGER PRIMARY KEY,
-            tipo TEXT,
+            tipus TEXT,
             valor TEXT
           );
         ''');
@@ -50,14 +50,14 @@ class DBProvider {
 
   Future<int> insertRawScan(ScanModel nuevoScan) async {
     final id = nuevoScan.id;
-    final tipo = nuevoScan.tipus;
+    final tipus = nuevoScan.tipus;
     final valor = nuevoScan.valor;
 
     final db = await database;
 
     final res = await db.rawInsert('''
       INSERT INTO Scans( id, tipo, valor )
-        VALUES( $id, $tipo, $valor )
+        VALUES( $id, $tipus, $valor )
     ''');
 
     return res;
@@ -87,20 +87,16 @@ class DBProvider {
     final db = await database;
     final res = await db.query('Scans');
 
-    return res.isNotEmpty
-        ? res.map((e) => ScanModel.fromJson(res.first)).toList()
-        : [];
+    return res.isNotEmpty ? res.map((e) => ScanModel.fromJson(e)).toList() : [];
   }
 
   Future<List<ScanModel>?> getScansPerTipus(String tipus) async {
     final db = await database;
     final res = await db.rawQuery('''
-      SELECT * FROM Scans WHERE tipo = '$tipus'
+      SELECT * FROM Scans WHERE tipus = '$tipus'
     ''');
 
-    return res.isNotEmpty
-        ? res.map((e) => ScanModel.fromJson(res.first)).toList()
-        : [];
+    return res.isNotEmpty ? res.map((e) => ScanModel.fromJson(e)).toList() : [];
   }
 
   // També ho podem fer amb RawQuery però és més llarg
