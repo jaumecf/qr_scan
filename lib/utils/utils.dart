@@ -9,5 +9,6 @@ void launchURL(BuildContext context, ScanModel scan) async {
     if (!await launch(url)) throw 'Could not launch $url';
   } else {
     // TODO: geoooo
+    Navigator.pushNamed(context, 'mapa', arguments: scan);
   }
 }

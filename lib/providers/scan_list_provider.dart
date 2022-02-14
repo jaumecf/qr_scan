@@ -7,17 +7,17 @@ class ScanListProvider extends ChangeNotifier {
   List<ScanModel> scans = [];
   String tipusSeleccionat = 'http';
 
-  nouScan(String valor) async {
+  Future<ScanModel> nouScan(String valor) async {
     final nouScan = new ScanModel(valor: valor);
     final id = await DBProvider.db.inserScan(nouScan);
     // Assignam el ID de la BBDD al model
 
     nouScan.id = id;
-    print('id des de provider: $id');
     if (tipusSeleccionat == nouScan.tipus) {
       this.scans.add(nouScan);
       notifyListeners();
     }
+    return nouScan;
   }
 
   carregaScans() async {
