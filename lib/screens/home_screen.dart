@@ -11,6 +11,17 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final uiProvider = Provider.of<UiProvider>(context);
+    // Canviar per a anar canviant entre pantalles
+    final currentIndex = uiProvider.selectedMenuOpt;
+
+    // Empram el Provider de la BBDD
+    final scanListProvider =
+        Provider.of<ScanListProvider>(context, listen: false);
+
+    final PageController _pageController =
+        PageController(initialPage: currentIndex);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Historial'),
@@ -24,8 +35,37 @@ class HomeScreen extends StatelessWidget {
           )
         ],
       ),
-      body: _HomeScreenBody(),
-      bottomNavigationBar: CustomNavigationBar(),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (nouIndex) {
+          uiProvider.selectedMenuOpt = nouIndex;
+          if (nouIndex == 0) {
+            scanListProvider.carregaScansPerTipus('geo');
+          } else {
+            scanListProvider.carregaScansPerTipus('http');
+          }
+        },
+        children: [
+          MapasScreen(),
+          DireccionsScreen(),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        onTap: (int i) => _pageController.animateToPage(i,
+            duration: Duration(milliseconds: 300), curve: Curves.ease),
+        elevation: 0,
+        currentIndex: currentIndex,
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Mapa',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.compass_calibration),
+            label: 'Direccions',
+          )
+        ],
+      ),
       floatingActionButton: ScanButton(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
@@ -53,18 +93,22 @@ class _HomeScreenBody extends StatelessWidget {
     });
     DBProvider.db.getTodosLosScan().then(print);
  */
-    switch (currentIndex) {
-      case 0:
-        scanListProvider.carregaScansPerTipus('geo');
-        return MapasScreen();
-
-      case 1:
-        scanListProvider.carregaScansPerTipus('http');
-        return DireccionsScreen();
-
-      default:
-        //scanListProvider.carregaScansPerTipus('geo');
-        return MapasScreen();
-    }
+    final PageController _pageController =
+        PageController(initialPage: currentIndex);
+    return PageView(
+      controller: _pageController,
+      onPageChanged: (nouIndex) {
+        uiProvider.selectedMenuOpt = nouIndex;
+        if (nouIndex == 0) {
+          scanListProvider.carregaScansPerTipus('geo');
+        } else {
+          scanListProvider.carregaScansPerTipus('http');
+        }
+      },
+      children: [
+        MapasScreen(),
+        DireccionsScreen(),
+      ],
+    );
   }
 }
